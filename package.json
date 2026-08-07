@@ -1,0 +1,18 @@
+{
+  "name": "gtfs-static-preprocessor",
+  "version": "1.0.0",
+  "description": "Malaysia GTFS Static preprocessor - downloads and parses all 16 data.gov.my feeds into JSON",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "start:verbose": "node index.js --verbose",
+    "process:provider": "node index.js --provider",
+    "split-indexes": "node --max-old-space-size=2048 split-indexes.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "csv-parse": "^5.6.0",
+    "node-fetch": "^2.7.0"
+  }
+}
