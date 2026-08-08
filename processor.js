@@ -588,6 +588,33 @@ async function processProvider(provider, dataDir, outputDir) {
     }
   }
 
+  // Step 4b: Provider-specific transformations
+  // For rapid_bus_mrtfeeder: route_short_name = original route_long_name (TXXX code)
+  //                         route_long_name = trip_headsign (descriptive name)
+  if (provider.key === 'rapid_bus_mrtfeeder' && parsed['routes.txt'] && parsed['trips.txt']) {
+    console.log('  Applying rapid_bus_mrtfeeder route mapping');
+
+    // Build route_id → route map
+    const routeMap = {};
+    for (const route of parsed['routes.txt']) {
+      routeMap[route.route_id] = route;
+    }
+
+    // Map trip_headsign to route_long_name
+    // First save original route_long_name as route_short_name (the TXXX code)
+    for (const trip of parsed['trips.txt']) {
+      if (trip.route_id && trip.trip_headsign && routeMap[trip.route_id]) {
+        const route = routeMap[trip.route_id];
+        // Save original route_long_name (TXXX) as route_short_name
+        if (!route.route_short_name && route.route_long_name) {
+          route.route_short_name = route.route_long_name;
+        }
+        // Set route_long_name to trip_headsign
+        route.route_long_name = trip.trip_headsign;
+      }
+    }
+  }
+
   // Step 5: Validate
   const validation = validateGtfsData(parsed);
   if (validation.valid) {
